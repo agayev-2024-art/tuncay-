@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JARVIS | Türkçe Asistan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="authOverlay" class="auth-overlay" hidden>
+      <form id="authForm" class="auth-dialog">
+        <span class="brand-mark">J</span><span class="eyebrow">JARVIS SECURE ACCESS</span>
+        <h2>Komanda mərkəzinə giriş</h2><p id="authMessage">Davam etmək üçün PIN kodunu daxil et.</p>
+        <input id="authPin" inputmode="numeric" maxlength="6" pattern="[0-9]{4,6}" type="password" placeholder="••••" autocomplete="current-password" required />
+        <button class="tool-button full-button" type="submit">Təsdiqlə</button>
+        <button id="closeAuthButton" class="auth-close" type="button">Bağla</button>
+      </form>
+    </div>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="." aria-label="Jarvis ana sayfa">
+          <span class="brand-mark">J</span>
+          <span>JARVIS</span>
+        </a>
+        <div class="header-tools"><label class="language-picker" title="Dil seçimi"><span>◉</span><select id="languageSelect"><option value="tr-TR">Türkçe</option><option value="az-AZ">Azərbaycan dili</option></select></label><label class="voice-picker" title="Səs seçimi"><span>◌</span><select id="voiceSelect"><option value="">Avtomatik səs</option></select></label><button id="loginButton" class="login-button" type="button">Giriş</button><div class="status-pill"><span class="status-dot"></span><span id="connectionStatus">HAZIR</span></div></div>
+      </header>
+
+      <main class="dashboard">
+        <section class="hero-panel">
+          <div class="eyebrow">KİŞİSEL SESLİ ASİSTAN <span>/</span> 01</div>
+          <h1>Bilgiye açılan<br /><em>ses.</em></h1>
+          <p class="intro">Türkçe konuş. Jarvis seni dinlesin, yanıtlasın, arasın ve bilgisayarının durumunu anlatsın.</p>
+
+          <div class="orb-wrap">
+            <div class="orb-glow"></div>
+            <button id="listenButton" class="listen-button" type="button" aria-label="Jarvis'i dinlemeye başlat">
+              <span class="orb-core"><span class="orb-line"></span><span class="orb-line"></span><span class="orb-line"></span></span>
+              <span class="listen-label" id="listenLabel">DİNLE</span>
+            </button>
+          </div>
+          <p class="hint" id="hintText">Mikrofonu açmak için butona dokun</p>
+        </section>
+
+        <section class="workspace-panel">
+          <div class="panel-heading">
+            <div><span class="eyebrow">KOMUTA MERKEZİ</span><h2>Aktivite akışı</h2></div>
+            <button id="clearButton" class="icon-button" type="button" title="Aktivite akışını temizle" aria-label="Aktivite akışını temizle">⌫</button>
+          </div>
+          <div class="transcript" id="transcript" aria-live="polite">
+            <div class="empty-state"><span class="empty-icon">◌</span><p>Henüz bir komut yok.</p><small>Örnek: “Saat kaç?” veya “Google’da müzik ara.”</small></div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-action" data-command="saat kaç"><span class="action-icon">◷</span><span>Saat kaç?</span></button>
+            <button class="quick-action" data-command="bilgisayar durumunu göster"><span class="action-icon">⌁</span><span>Sistem durumu</span></button>
+            <button class="quick-action" data-command="google'da haber ara"><span class="action-icon">⌕</span><span>Google’da ara</span></button>
+          </div>
+          <form id="chatForm" class="chat-form">
+            <input id="chatInput" type="text" autocomplete="off" placeholder="Jarvis'e yaz..." aria-label="Jarvis'e mesaj yaz" />
+            <button type="submit" aria-label="Mesajı göndər">Gönder</button>
+          </form>
+          <div class="recording-tools">
+            <div class="recording-heading"><span class="eyebrow">KAYIT STÜDYOSU</span><span id="recordingStatus">Hazır</span></div>
+            <div class="recording-actions">
+              <button id="audioRecordButton" class="record-button" type="button"><span class="record-dot"></span> Ses kaydı</button>
+              <button id="screenRecordButton" class="record-button" type="button"><span class="record-square"></span> Ekran kaydı</button>
+            </div>
+            <div id="downloadArea" class="download-area" hidden></div>
+          </div>
+        </section>
+
+        <section class="capabilities-panel">
+          <div class="panel-heading compact"><div><span class="eyebrow">YETENEKLER</span><h2>Jarvis'in elleri ve gözleri</h2></div><span class="live-label"><span class="status-dot"></span> MODÜLER</span></div>
+          <div class="capability-grid">
+            <article class="capability-card camera-card">
+              <div class="capability-top"><span class="capability-icon">◎</span><span class="eyebrow">KAMERA / GÖRÜŞ</span></div>
+              <video id="cameraPreview" autoplay muted playsinline hidden></video>
+              <div id="cameraPlaceholder" class="capability-placeholder"><strong>Karşındaki şeyi gör</strong><span>Kamerayı aç, görüntüyü Jarvis'e göster.</span></div>
+              <div class="capability-controls"><button id="cameraButton" class="tool-button" type="button">Kamerayı aç</button><button id="snapshotButton" class="tool-button" type="button" disabled>Görüntü al</button></div>
+            </article>
+            <article class="capability-card">
+              <div class="capability-top"><span class="capability-icon">▣</span><span class="eyebrow">EKRAN / GÖRÜNTÜ</span></div>
+              <div class="capability-placeholder"><strong>Ekranda ne var?</strong><span>Bir anlık ekran görüntüsünü PNG olarak al.</span></div>
+              <button id="screenshotButton" class="tool-button full-button" type="button">Ekran görüntüsü al</button>
+            </article>
+            <article class="capability-card home-card">
+              <div class="capability-top"><span class="capability-icon">⌂</span><span class="eyebrow">AKILLI EV / DEMO</span></div>
+              <div class="home-controls"><label><span>Işık</span><input id="lightToggle" type="checkbox" /><i></i></label><label><span>Fan</span><input id="fanToggle" type="checkbox" /><i></i></label></div>
+              <label class="temperature-control"><span>Sıcaklık <strong id="temperatureValue">22°</strong></span><input id="temperatureSlider" type="range" min="16" max="30" value="22" /></label>
+            </article>
+          </div>
+          <div class="capability-footer"><button id="wakeButton" class="wake-button" type="button"><span class="status-dot"></span><span id="wakeLabel">“Hey JARVIS” uyanık modu</span></button><span id="pluginStatus">Plugin çekirdeği hazır · 0 eklenti</span></div>
+        </section>
+
+        <section class="tools-panel">
+          <div class="panel-heading compact"><div><span class="eyebrow">GÜNLÜK KOMUTLAR</span><h2>Hatırla, kaydet, yönet</h2></div><span class="live-label"><span class="status-dot"></span> LOKAL</span></div>
+          <div class="tools-grid">
+            <form id="reminderForm" class="utility-card"><div class="capability-top"><span class="capability-icon">◷</span><span class="eyebrow">HATIRLATMA</span></div><input id="reminderText" required placeholder="Neyi hatırlatayım?" /><input id="reminderTime" required type="datetime-local" /><button class="tool-button full-button" type="submit">Hatırlatmayı kur</button></form>
+            <form id="noteForm" class="utility-card"><div class="capability-top"><span class="capability-icon">▤</span><span class="eyebrow">NOTLAR</span></div><textarea id="noteText" required placeholder="“Bunu not al...”"></textarea><button class="tool-button full-button" type="submit">Notu kaydet</button><div id="notesList" class="notes-list"></div></form>
+            <form id="calendarForm" class="utility-card"><div class="capability-top"><span class="capability-icon">▦</span><span class="eyebrow">TAKVİM</span></div><input id="eventText" required placeholder="Toplantı / iş adı" /><input id="eventTime" required type="datetime-local" /><button class="tool-button full-button" type="submit">Takvime ekle</button><div id="eventStatus" class="tool-status">Tarayıcı takvimi hazır</div></form>
+            <div class="utility-card music-card"><div class="capability-top"><span class="capability-icon">♫</span><span class="eyebrow">MÜZİK</span></div><strong id="musicTitle">Müzik komutlarını bekliyor</strong><span class="tool-status">“Müzik aç”, “duraklat” veya “sonraki şarkı” de.</span><div class="music-controls"><button id="musicPlay" class="tool-button" type="button">▶ Oynat</button><button id="musicPause" class="tool-button" type="button">Ⅱ Duraklat</button><button id="musicNext" class="tool-button" type="button">↠ Sonraki</button></div></div>
+          </div>
+        </section>
+
+        <section class="settings-panel">
+          <div class="panel-heading compact"><div><span class="eyebrow">JARVIS AYARLARI</span><h2>Komuta merkezini kişiselleştir</h2></div><span class="live-label"><span class="status-dot"></span> YEREL</span></div>
+          <div class="settings-grid">
+            <div class="settings-card"><div class="settings-card-title"><span class="capability-icon">◉</span><strong>Ses ve dil</strong></div><label class="setting-row"><span>Aktif dil</span><select id="settingsLanguage"><option value="az-AZ">Azərbaycan dili</option><option value="tr-TR">Türkçe</option></select></label><label class="setting-row"><span>AI cavabları</span><select id="responseStyle"><option value="balanced">Balanslı</option><option value="brief">Qısa və dəqiq</option><option value="epic">Epik Jarvis</option></select></label><label class="setting-row"><span>Səsli cavab</span><input id="speechToggle" type="checkbox" checked /><i class="switch"></i></label></div>
+            <div class="settings-card"><div class="settings-card-title"><span class="capability-icon">◐</span><strong>Görünüş və bildiriş</strong></div><label class="setting-row"><span>Komanda teması</span><select id="themeSelect"><option value="command">Neon command</option><option value="midnight">Midnight blue</option><option value="amber">Amber console</option></select></label><label class="setting-row"><span>Bildirişlər</span><input id="notificationToggle" type="checkbox" checked /><i class="switch"></i></label><label class="setting-row"><span>Avtomatik cavab</span><input id="automationToggle" type="checkbox" checked /><i class="switch"></i></label></div>
+            <div class="settings-card"><div class="settings-card-title"><span class="capability-icon">🔐</span><strong>Giriş təhlükəsizliyi</strong></div><label class="setting-row"><span>PIN qoruması</span><input id="pinToggle" type="checkbox" /><i class="switch"></i></label><div class="pin-row"><input id="pinInput" inputmode="numeric" maxlength="6" placeholder="Yeni PIN" type="password" /><button id="savePinButton" class="tool-button" type="button">Yadda saxla</button></div><label class="setting-row"><span>Səs tanıma</span><input id="voiceAuthToggle" type="checkbox" /><i class="switch"></i></label><small class="setting-note" id="securityStatus">Qoruma deaktivdir</small></div>
+            <div class="settings-card"><div class="settings-card-title"><span class="capability-icon">⚡</span><strong>Avtomatlaşdırma və ev</strong></div><label class="setting-row"><span>Avtomatik rejim</span><input id="homeAutomationToggle" type="checkbox" /><i class="switch"></i></label><label class="setting-row"><span>Ağıllı ev</span><select id="homeMode"><option value="local">Demo cihazlar</option><option value="mqtt">MQTT gateway</option><option value="homeassistant">Home Assistant</option></select></label><label class="setting-row"><span>Temperatur limiti</span><input id="tempLimit" class="number-input" type="number" value="24" min="16" max="35" /><span class="unit">°C</span></label></div>
+            <div class="settings-card"><div class="settings-card-title"><span class="capability-icon">🔌</span><strong>İnteqrasiyalar</strong></div><label class="setting-row"><span>Spotify</span><input id="spotifyToggle" type="checkbox" /><i class="switch"></i></label><label class="setting-row"><span>Google Calendar</span><input id="calendarToggle" type="checkbox" checked /><i class="switch"></i></label><label class="setting-row"><span>Web axtarışı</span><input id="webSearchToggle" type="checkbox" checked /><i class="switch"></i></label></div>
+            <div class="settings-card developer-card"><div class="settings-card-title"><span class="capability-icon">⌘</span><strong>Developer Mode</strong></div><label class="setting-row"><span>Pluginlər</span><input id="developerToggle" type="checkbox" /><i class="switch"></i></label><label class="setting-row"><span>API endpoint</span><input id="apiEndpoint" class="endpoint-input" placeholder="https://api.example.com" /></label><button id="saveSettingsButton" class="tool-button full-button" type="button">Ayarları saxla</button><div id="developerLog" class="developer-log">Sistem logları deaktivdir</div></div>
+          </div>
+        </section>
+
+        <section class="metrics-panel">
+          <div class="panel-heading compact"><div><span class="eyebrow">SİSTEM GÖSTERGELERİ</span><h2>Bilgisayar durumu</h2></div><span class="live-label"><span class="status-dot"></span> CANLI</span></div>
+          <div class="metrics-grid">
+            <div class="metric"><span class="metric-label">SAAT</span><strong id="clockValue">--:--</strong><span class="metric-sub" id="dateValue">--</span></div>
+            <div class="metric"><span class="metric-label">PLATFORM</span><strong id="platformValue">--</strong><span class="metric-sub">tarayıcı bilgisi</span></div>
+            <div class="metric"><span class="metric-label">EKRAN</span><strong id="screenValue">--</strong><span class="metric-sub">piksel</span></div>
+            <div class="metric"><span class="metric-label">BATARYA</span><strong id="batteryValue">--</strong><span class="metric-sub" id="batterySub">durum okunuyor</span></div>
+            <div class="metric"><span class="metric-label">CPU ÇEKİRDEĞİ</span><strong id="cpuValue">--</strong><span class="metric-sub">tarayıcı bilgisi</span></div>
+            <div class="metric"><span class="metric-label">RAM</span><strong id="memoryValue">--</strong><span class="metric-sub">yaklaşık değer</span></div>
+          </div>
+        </section>
+      </main>
+      <footer><span>JARVIS LOCAL CORE</span><span>Türkçe ses motoru aktif</span></footer>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
